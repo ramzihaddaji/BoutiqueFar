@@ -1,0 +1,108 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détails de {{ article.name }} - Administration{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Admin</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_article_index') }}">Articles</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ article.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="h3 fw-bold text-dark mb-0">{{ article.name }}</h1>
+    </div>
+    <div class="btn-group">
+        <a href="{{ path('admin_article_edit', {id: article.id}) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Modifier
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-7">
+        <div class="card admin-card bg-white p-4 shadow-sm h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Caractéristiques du Produit</h5>
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">ID Référence</dt>
+                <dd class="col-sm-8">#{{ article.id }}</dd>
+
+                <dt class="col-sm-4 text-muted">Catégorie Finale</dt>
+                <dd class="col-sm-8">
+                    <a href="{{ path('admin_category_show', {id: article.category.id}) }}" class="text-decoration-none">
+                        {{ article.category.name }}
+                    </a>
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Prix de vente</dt>
+                <dd class="col-sm-8 fw-bold fs-5 text-dark">{{ article.price }} €</dd>
+
+                <dt class="col-sm-4 text-muted">Disponibilité</dt>
+                <dd class="col-sm-8">
+                    {% if article.available %}
+                        <span class="badge bg-success">Disponible</span>
+                    {% else %}
+                        <span class="badge bg-danger">Indisponible</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Description</dt>
+                <dd class="col-sm-8">{{ article.description ? article.description|nl2br : 'Aucune description fournie.' }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Visuel et Zone de suppression -->
+    <div class="col-md-5">
+        <div class="card admin-card bg-white p-4 shadow-sm mb-4 text-center">
+            <h6 class="text-muted text-uppercase small mb-3">Visuel Produit</h6>
+            {% if article.image %}
+                <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="img-fluid rounded border shadow-sm mx-auto d-block" style="max-height: 220px; object-fit: contain;">
+            {% else %}
+                <div class="p-4 bg-light rounded text-muted">
+                    <i class="bi bi-image fs-1 opacity-50"></i>
+                    <p class="small mb-0 mt-1">Aucune photo associée</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card admin-card bg-white p-4 shadow-sm border-danger-subtle">
+            <h5 class="fw-bold text-danger mb-2">Zone Dangereuse</h5>
+            <p class="text-muted small">
+                La suppression sera bloquée si des demandes historiques sont associées à cet article (politique de conservation).
+            </p>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteArticleModal">
+                <i class="bi bi-trash3 me-1"></i> Supprimer cet article
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmation Suppression -->
+<div class="modal fade" id="deleteArticleModal" tabindex="-1" aria-labelledby="deleteArticleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteArticleModalLabel"><i class="bi bi-exclamation-triangle me-2"></i>Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer définitivement l'article <strong>{{ article.name }}</strong> ?
+                <div class="alert alert-warning mt-3 small mb-0">
+                    Si des demandes de disponibilité ont été passées pour cet article, la suppression sera rejetée afin de conserver l'historique commercial.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="{{ path('admin_article_delete', {id: article.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_article_' ~ article.id) }}">
+                    <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

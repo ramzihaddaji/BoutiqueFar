@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-100">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Boutique En Ligne{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🛍️</text></svg>">
+        
+        <!-- Bootstrap 5 CSS & Icons -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        
+        <style>
+            :root {
+                --primary-color: #2b3a4a;
+                --accent-color: #25D366;
+            }
+            .navbar-brand {
+                font-weight: 700;
+                letter-spacing: -0.5px;
+            }
+            .product-card {
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            .product-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            }
+            .badge-whatsapp {
+                background-color: var(--accent-color);
+                color: #fff;
+            }
+            .btn-whatsapp {
+                background-color: var(--accent-color);
+                color: #fff;
+                font-weight: 600;
+            }
+            .btn-whatsapp:hover {
+                background-color: #1eb954;
+                color: #fff;
+            }
+            .product-image-container {
+                height: 220px;
+                background-color: #f8f9fa;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .product-image-container img {
+                max-height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        </style>
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body class="d-flex flex-column h-100 bg-light">
+        <!-- Navigation Principale -->
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('public_home') }}">
+                        <i class="bi bi-shop text-success fs-4"></i>
+                        <span>Boutique</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Menu de navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarMain">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link {% if app.request.attributes.get('_route') == 'public_home' %}active{% endif %}" href="{{ path('public_home') }}">
+                                    <i class="bi bi-house me-1"></i> Accueil
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'public_category' in app.request.attributes.get('_route') %}active{% endif %}" href="{{ path('public_category_index') }}">
+                                    <i class="bi bi-grid me-1"></i> Catégories
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'public_article' in app.request.attributes.get('_route') %}active{% endif %}" href="{{ path('public_article_index') }}">
+                                    <i class="bi bi-tags me-1"></i> Tous les articles
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <!-- Barre de recherche rapide -->
+                        <form class="d-flex me-3" role="search" method="get" action="{{ path('public_article_index') }}">
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" type="search" name="q" placeholder="Rechercher un article..." value="{{ app.request.query.get('q') }}" aria-label="Rechercher">
+                                <button class="btn btn-sm btn-outline-light" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Menu Utilisateur / Espace Admin -->
+                        <ul class="navbar-nav">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle active text-warning d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-shield-lock-fill"></i> Admin
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                                        <li><a class="dropdown-item" href="{{ path('admin_dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Tableau de bord</a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_category_index') }}"><i class="bi bi-diagram-3 me-2"></i> Gérer catégories</a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_article_index') }}"><i class="bi bi-boxes me-2"></i> Gérer articles</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Déconnexion</a></li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_login') }}">
+                                        <i class="bi bi-person-lock me-1"></i> Administration
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Messages Flash Globaux -->
+        <div class="container mt-3">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show shadow-sm" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Contenu Principal -->
+        <main class="flex-shrink-0 my-4">
+            {% block body %}{% endblock %}
+        </main>
+
+        <!-- Pied de page -->
+        <footer class="footer mt-auto py-4 bg-dark text-white border-top border-secondary">
+            <div class="container text-center text-md-start">
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h5 class="text-uppercase fw-bold mb-1"><i class="bi bi-shop text-success me-2"></i>Boutique En Ligne</h5>
+                        <p class="text-white-50 mb-0">Catalogue d'articles avec demande de disponibilité instantanée sur WhatsApp.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end text-white-50">
+                        <small>&copy; {{ "now"|date("Y") }} Boutique. Tous droits réservés.</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bootstrap 5 Bundle JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

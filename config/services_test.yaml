@@ -1,0 +1,4 @@
+services:
+    test.form.factory:
+        alias: 'form.factory'
+        public: true

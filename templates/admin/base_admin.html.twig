@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Boutique{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .admin-sidebar {
+        min-height: calc(100vh - 170px);
+        background-color: #ffffff;
+        border-right: 1px solid #e9ecef;
+    }
+    .admin-nav-link {
+        color: #495057;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 4px;
+    }
+    .admin-nav-link:hover, .admin-nav-link.active {
+        background-color: #e8f0fe;
+        color: #1a73e8;
+    }
+    .admin-card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <!-- Barre latérale d'administration -->
+        <aside class="col-lg-2 col-md-3 admin-sidebar py-3 d-none d-md-block">
+            <div class="text-uppercase text-muted fw-bold small mb-3 px-2">Menu d'administration</div>
+            <nav class="nav flex-column">
+                <a class="nav-link admin-nav-link {% if app.request.attributes.get('_route') == 'admin_dashboard' %}active{% endif %}" href="{{ path('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
+                </a>
+                <a class="nav-link admin-nav-link {% if 'admin_category' in app.request.attributes.get('_route') %}active{% endif %}" href="{{ path('admin_category_index') }}">
+                    <i class="bi bi-diagram-3 me-2"></i> Catégories
+                </a>
+                <a class="nav-link admin-nav-link {% if 'admin_article' in app.request.attributes.get('_route') %}active{% endif %}" href="{{ path('admin_article_index') }}">
+                    <i class="bi bi-boxes me-2"></i> Articles
+                </a>
+                <hr class="my-3">
+                <a class="nav-link admin-nav-link text-primary" href="{{ path('public_home') }}" target="_blank">
+                    <i class="bi bi-box-arrow-up-right me-2"></i> Voir le site public
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Contenu de la page admin -->
+        <div class="col-lg-10 col-md-9 py-3 px-md-4">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

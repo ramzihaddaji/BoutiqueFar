@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Arbre des Catégories - Boutique{% endblock %}
+
+{% block body %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Catégories</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold text-dark mb-1">Nos Rayons et Catégories</h1>
+            <p class="text-muted">Explorez nos catégories et sous-catégories pour trouver vos produits</p>
+        </div>
+    </div>
+
+    {% if root_categories is empty %}
+        <div class="alert alert-info">Aucune catégorie n'est active actuellement.</div>
+    {% else %}
+        <div class="row g-4">
+            {% for root in root_categories %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <a href="{{ path('public_category_show', {id: root.id}) }}" class="text-decoration-none text-dark">
+                                    <i class="bi bi-folder-fill text-warning me-2"></i>{{ root.name }}
+                                </a>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if root.description %}
+                                <p class="text-muted small mb-3">{{ root.description }}</p>
+                            {% endif %}
+
+                            {% if root.children is not empty %}
+                                <h6 class="text-uppercase text-muted fw-semibold small mb-2">Sous-catégories :</h6>
+                                <ul class="list-group list-group-flush">
+                                    {% for child in root.children %}
+                                        {% if child.active %}
+                                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center border-0 py-1">
+                                                <a href="{{ path('public_category_show', {id: child.id}) }}" class="text-decoration-none text-secondary">
+                                                    <i class="bi bi-chevron-right text-primary me-1 small"></i>{{ child.name }}
+                                                </a>
+                                                {% if child.children is not empty %}
+                                                    <span class="badge bg-light text-muted">{{ child.children|length }} ss-cat.</span>
+                                                {% endif %}
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted small mb-0 fst-italic">Catégorie finale directe.</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-light border-0 py-2 text-end">
+                            <a href="{{ path('public_category_show', {id: root.id}) }}" class="btn btn-sm btn-link text-decoration-none">
+                                Explorer ce rayon <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

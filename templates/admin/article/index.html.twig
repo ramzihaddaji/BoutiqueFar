@@ -1,0 +1,92 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Gestion des Articles - Administration{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Articles & Produits</h1>
+        <p class="text-muted small mb-0">Gestion du catalogue des articles, prix, photos et disponibilités</p>
+    </div>
+    <a href="{{ path('admin_article_new') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i> Nouvel Article
+    </a>
+</div>
+
+<div class="card admin-card bg-white shadow-sm overflow-hidden">
+    <div class="card-body p-0">
+        {% if articles is empty %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-box2 fs-1 d-block mb-2 opacity-50"></i>
+                Aucun article n'a encore été créé.
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 70px;">Visuel</th>
+                            <th>Désignation</th>
+                            <th>Catégorie</th>
+                            <th>Prix</th>
+                            <th>Disponibilité</th>
+                            <th>Demandes</th>
+                            <th class="text-end" style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for art in articles %}
+                            <tr>
+                                <td>
+                                    {% if art.image %}
+                                        <img src="{{ asset('uploads/articles/' ~ art.image) }}" alt="{{ art.name }}" class="rounded-2" style="width: 48px; height: 48px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light rounded-2 d-flex align-items-center justify-content-center text-muted border" style="width: 48px; height: 48px;">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ art.name }}</strong>
+                                    {% if art.description %}
+                                        <div class="text-muted small text-truncate" style="max-width: 280px;">{{ art.description }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary">{{ art.category.name }}</span>
+                                </td>
+                                <td class="fw-bold">{{ art.price }} €</td>
+                                <td>
+                                    {% if art.available %}
+                                        <span class="badge bg-success">Disponible</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Indisponible</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if art.hasDemandes %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-whatsapp me-1"></i>{{ art.demandes|length }} demande(s)</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-muted border">0</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ path('admin_article_show', {id: art.id}) }}" class="btn btn-outline-secondary" title="Détails">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_article_edit', {id: art.id}) }}" class="btn btn-outline-primary" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

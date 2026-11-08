@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ category.name }} - Rayon Boutique{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Fil d'Ariane hiérarchique -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('public_category_index') }}">Catégories</a></li>
+            {% for crumb in breadcrumbs %}
+                {% if loop.last %}
+                    <li class="breadcrumb-item active fw-semibold" aria-current="page">{{ crumb.name }}</li>
+                {% else %}
+                    <li class="breadcrumb-item"><a href="{{ path('public_category_show', {id: crumb.id}) }}">{{ crumb.name }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+
+    <!-- En-tête Catégorie -->
+    <div class="bg-white p-4 rounded-4 shadow-sm mb-4 border border-light">
+        <h1 class="h2 fw-bold text-dark mb-2">{{ category.name }}</h1>
+        {% if category.description %}
+            <p class="text-muted mb-0">{{ category.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Si la catégorie a des sous-catégories -->
+    {% if children is not empty %}
+        <div class="mb-5">
+            <h4 class="fw-bold mb-3">Sous-catégories de {{ category.name }}</h4>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                {% for child in children %}
+                    <div class="col">
+                        <a href="{{ path('public_category_show', {id: child.id}) }}" class="card text-decoration-none shadow-sm product-card border-0 bg-white">
+                            <div class="card-body text-center py-3">
+                                <i class="bi bi-folder-symlink text-primary fs-3 mb-2 d-block"></i>
+                                <span class="fw-semibold text-dark">{{ child.name }}</span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Si c'est une catégorie finale : affichage des articles -->
+    {% if category.isLeaf %}
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">Articles disponibles ({{ total_articles }})</h4>
+                <a href="{{ path('public_article_index', {category: category.id}) }}" class="btn btn-outline-secondary btn-sm">
+                    Filtrer dans le catalogue
+                </a>
+            </div>
+
+            {% if articles is empty %}
+                <div class="alert alert-info border-0 shadow-sm">
+                    Aucun article n'est actuellement disponible dans cette catégorie finale.
+                </div>
+            {% else %}
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+                    {% for article in articles %}
+                        <div class="col">
+                            {% include 'components/_product_card.html.twig' with {'article': article} %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if max_pages > 1 %}
+                    <nav aria-label="Pagination articles" class="d-flex justify-content-center mt-4">
+                        <ul class="pagination">
+                            <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
+                                <a class="page-link" href="{{ path('public_category_show', {id: category.id, page: current_page - 1}) }}">Précédent</a>
+                            </li>
+                            {% for p in 1..max_pages %}
+                                <li class="page-item {% if p == current_page %}active{% endif %}">
+                                    <a class="page-link" href="{{ path('public_category_show', {id: category.id, page: p}) }}">{{ p }}</a>
+                                </li>
+                            {% endfor %}
+                            <li class="page-item {% if current_page >= max_pages %}disabled{% endif %}">
+                                <a class="page-link" href="{{ path('public_category_show', {id: category.id, page: current_page + 1}) }}">Suivant</a>
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

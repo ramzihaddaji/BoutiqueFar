@@ -1,0 +1,106 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détails de {{ category.name }} - Administration{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Admin</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_category_index') }}">Catégories</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="h3 fw-bold text-dark mb-0">{{ category.name }}</h1>
+    </div>
+    <div class="btn-group">
+        <a href="{{ path('admin_category_edit', {id: category.id}) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Modifier
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card admin-card bg-white p-4 shadow-sm h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Informations Générales</h5>
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">ID</dt>
+                <dd class="col-sm-8">#{{ category.id }}</dd>
+
+                <dt class="col-sm-4 text-muted">Statut</dt>
+                <dd class="col-sm-8">
+                    {% if category.active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Parent</dt>
+                <dd class="col-sm-8">
+                    {% if category.parent %}
+                        <a href="{{ path('admin_category_show', {id: category.parent.id}) }}" class="text-decoration-none">
+                            {{ category.parent.name }}
+                        </a>
+                    {% else %}
+                        <span class="badge bg-light text-dark border">Catégorie Racine</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Type</dt>
+                <dd class="col-sm-8">
+                    {% if category.isLeaf %}
+                        <span class="badge bg-info-subtle text-info">Feuille (peut accueillir des articles)</span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary">Nœud intermédiaire</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Description</dt>
+                <dd class="col-sm-8">{{ category.description ? category.description : 'Aucune description.' }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Zone de suppression sécurisée avec modal -->
+    <div class="col-md-6">
+        <div class="card admin-card bg-white p-4 shadow-sm border-danger-subtle">
+            <h5 class="fw-bold text-danger mb-3 border-bottom pb-2">Zone Dangereuse</h5>
+            <p class="text-muted small">
+                La suppression n'est autorisée que si la catégorie ne possède aucune sous-catégorie et aucun article associé.
+            </p>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash3 me-1"></i> Supprimer cette catégorie
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmation Suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel"><i class="bi bi-exclamation-triangle me-2"></i>Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer définitivement la catégorie <strong>{{ category.name }}</strong> ?
+                <div class="alert alert-warning mt-3 small mb-0">
+                    Cette action échouera automatiquement si des enfants ou des articles y sont attachés.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="{{ path('admin_category_delete', {id: category.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_category_' ~ category.id) }}">
+                    <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

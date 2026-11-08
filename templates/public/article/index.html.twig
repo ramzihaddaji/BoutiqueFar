@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue des Articles - Boutique{% endblock %}
+
+{% block body %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Articles</li>
+        </ol>
+    </nav>
+
+    <!-- Zone de Filtrage et Recherche -->
+    <div class="card shadow-sm border-0 mb-4 rounded-3">
+        <div class="card-body p-4">
+            <form method="get" action="{{ path('public_article_index') }}" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="searchQuery" class="form-label fw-semibold small text-muted">Rechercher par mot-clé</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="searchQuery" name="q" value="{{ search_query }}" placeholder="Nom, description...">
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <label for="categoryFilter" class="form-label fw-semibold small text-muted">Catégorie finale</label>
+                    <select class="form-select" id="categoryFilter" name="category">
+                        <option value="">-- Toutes les catégories --</option>
+                        {% for cat in leaf_categories %}
+                            <option value="{{ cat.id }}" {% if selected_category and selected_category.id == cat.id %}selected{% endif %}>
+                                {{ cat.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filtrer
+                    </button>
+                    {% if search_query or selected_category %}
+                        <a href="{{ path('public_article_index') }}" class="btn btn-outline-secondary" title="Réinitialiser les filtres">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- En-tête des résultats -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-0">Tous les Articles</h1>
+            <p class="text-muted small mb-0">{{ total_articles }} article(s) trouvé(s)</p>
+        </div>
+        {% if selected_category %}
+            <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+                Filtre : {{ selected_category.name }}
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- Grille des Articles -->
+    {% if articles is empty %}
+        <div class="alert alert-info py-5 text-center border-0 shadow-sm rounded-4">
+            <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+            <h5 class="fw-bold">Aucun article ne correspond à votre recherche.</h5>
+            <p class="text-muted mb-3">Essayez d'ajuster vos filtres ou de chercher un autre mot-clé.</p>
+            <a href="{{ path('public_article_index') }}" class="btn btn-outline-primary btn-sm">Réinitialiser les filtres</a>
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            {% for article in articles %}
+                <div class="col">
+                    {% include 'components/_product_card.html.twig' with {'article': article} %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if max_pages > 1 %}
+            <nav aria-label="Pagination catalogue" class="d-flex justify-content-center">
+                <ul class="pagination shadow-sm">
+                    <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ path('public_article_index', {page: current_page - 1, q: search_query, category: selected_category ? selected_category.id : null}) }}">Précédent</a>
+                    </li>
+                    {% for p in 1..max_pages %}
+                        <li class="page-item {% if p == current_page %}active{% endif %}">
+                            <a class="page-link" href="{{ path('public_article_index', {page: p, q: search_query, category: selected_category ? selected_category.id : null}) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item {% if current_page >= max_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ path('public_article_index', {page: current_page + 1, q: search_query, category: selected_category ? selected_category.id : null}) }}">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

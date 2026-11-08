@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Boutique en Ligne{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Hero Banner -->
+    <div class="p-5 mb-5 bg-white rounded-4 shadow-sm border border-light">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="badge bg-success-subtle text-success mb-2 px-3 py-2 rounded-pill fw-semibold">
+                    <i class="bi bi-whatsapp me-1"></i> Commande directe et rapide
+                </span>
+                <h1 class="display-5 fw-bold text-dark lh-sm">Trouvez votre bonheur dans notre catalogue</h1>
+                <p class="lead text-muted my-3">
+                    Découvrez nos collections d'articles disponibles et contactez-nous directement sur WhatsApp en un clic pour valider votre commande.
+                </p>
+                <div class="d-flex gap-2 pt-2">
+                    <a href="{{ path('public_article_index') }}" class="btn btn-primary btn-lg px-4 gap-2">
+                        <i class="bi bi-grid-fill me-1"></i> Parcourir le catalogue
+                    </a>
+                    <a href="{{ path('public_category_index') }}" class="btn btn-outline-secondary btn-lg px-4">
+                        Toutes les catégories
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <i class="bi bi-bag-heart text-success" style="font-size: 8rem; opacity: 0.85;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catégories Principales -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h3 fw-bold text-dark mb-0">Catégories Principales</h2>
+                <p class="text-muted small mb-0">Naviguez par rayon et découvrez nos sous-catégories</p>
+            </div>
+            <a href="{{ path('public_category_index') }}" class="btn btn-outline-primary btn-sm">
+                Voir tout <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        {% if root_categories is empty %}
+            <div class="alert alert-info border-0 shadow-sm">Aucune catégorie disponible pour le moment.</div>
+        {% else %}
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                {% for category in root_categories %}
+                    <div class="col">
+                        <a href="{{ path('public_category_show', {id: category.id}) }}" class="card h-100 text-decoration-none shadow-sm product-card border-0 bg-white">
+                            <div class="card-body text-center py-4">
+                                <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                                    <i class="bi bi-folder2-open fs-4"></i>
+                                </div>
+                                <h6 class="card-title fw-bold text-dark mb-1">{{ category.name }}</h6>
+                                <span class="badge bg-light text-muted border">
+                                    {{ category.children|length }} sous-catégorie(s)
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Articles Populaires -->
+    {% if popular_articles is not empty %}
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h3 fw-bold text-dark mb-0">Les Plus Demandés</h2>
+                    <p class="text-muted small mb-0">Articles les plus sollicités par nos clients</p>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4">
+                {% for article in popular_articles %}
+                    <div class="col">
+                        {% include 'components/_product_card.html.twig' with {'article': article} %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Nouveaux Articles Disponibles -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h3 fw-bold text-dark mb-0">Derniers Articles Ajoutés</h2>
+                <p class="text-muted small mb-0">Produits récemment publiés et prêts pour expédition</p>
+            </div>
+            <a href="{{ path('public_article_index') }}" class="btn btn-outline-primary btn-sm">
+                Tous les articles <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        {% if latest_articles is empty %}
+            <div class="alert alert-info border-0 shadow-sm">Aucun article disponible pour l'instant.</div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for article in latest_articles %}
+                    <div class="col">
+                        {% include 'components/_product_card.html.twig' with {'article': article} %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
