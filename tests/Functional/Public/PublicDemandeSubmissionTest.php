@@ -58,7 +58,7 @@ class PublicDemandeSubmissionTest extends WebTestCase
 
         // 5. Vérifier que la demande est enregistrée dans la base de données
         /** @var Demande $demandeInDb */
-        $demandeInDb = $this->em->getRepository(Demande::class)->findOneBy(['clientName' => 'Julien Mercier']);
+        $demandeInDb = $this->em->getRepository(Demande::class)->findOneBy(['clientName' => 'Julien Mercier'], ['id' => 'DESC']);
         $this->assertNotNull($demandeInDb);
         $this->assertSame('+33611223344', $demandeInDb->getPhone());
         $this->assertSame('Nantes', $demandeInDb->getCity());

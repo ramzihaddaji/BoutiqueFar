@@ -96,6 +96,28 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne les articles actifs et en stock pour la vitrine plein écran de l'accueil,
+     * ordonnés du plus récent au plus ancien, avec jointure eager de la catégorie
+     * pour prévenir tout problème de requêtes N+1.
+     *
+     * @return Article[]
+     */
+    public function findInStockForShowcase(int $limit = 12): array
+    {
+        return $this->createQueryBuilder('a')
+            ->join('a.category', 'c')
+            ->addSelect('c')
+            ->where('a.available = :available')
+            ->andWhere('c.active = :categoryActive')
+            ->setParameter('available', true)
+            ->setParameter('categoryActive', true)
+            ->orderBy('a.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Recherche textuelle d'articles par mot-clé (dans le nom ou la description).
      *
      * @return Article[]

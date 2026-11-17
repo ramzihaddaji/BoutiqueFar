@@ -45,6 +45,7 @@ class RepositoryQueryTest extends KernelTestCase
 
         $this->assertIsArray($this->articleRepository->findAvailableArticles());
         $this->assertIsArray($this->articleRepository->findLatestArticles(5));
+        $this->assertIsArray($this->articleRepository->findInStockForShowcase(12));
         $this->assertIsArray($this->articleRepository->searchArticles('test'));
         $this->assertNull($this->articleRepository->findAvailableById(999999));
     }

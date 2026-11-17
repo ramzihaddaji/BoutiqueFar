@@ -1,71 +1,118 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Arbre des Catégories - Boutique{% endblock %}
+{% block title %}Nos rayons — Atelier Boutique{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/categories.css') }}">
+{% endblock %}
 
 {% block body %}
-<div class="container">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Catégories</li>
-        </ol>
-    </nav>
+<div class="categories-page">
+    <div class="container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h2 fw-bold text-dark mb-1">Nos Rayons et Catégories</h1>
-            <p class="text-muted">Explorez nos catégories et sous-catégories pour trouver vos produits</p>
-        </div>
-    </div>
+        <nav class="categories-breadcrumb" aria-label="Fil d’Ariane">
+            <a href="{{ path('public_home') }}">Accueil</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Rayons</span>
+        </nav>
 
-    {% if root_categories is empty %}
-        <div class="alert alert-info">Aucune catégorie n'est active actuellement.</div>
-    {% else %}
-        <div class="row g-4">
-            {% for root in root_categories %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-3">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <h5 class="mb-0 fw-bold">
-                                <a href="{{ path('public_category_show', {id: root.id}) }}" class="text-decoration-none text-dark">
-                                    <i class="bi bi-folder-fill text-warning me-2"></i>{{ root.name }}
-                                </a>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            {% if root.description %}
-                                <p class="text-muted small mb-3">{{ root.description }}</p>
-                            {% endif %}
+        <header class="categories-hero">
+            <div class="categories-hero-copy">
+                <span class="categories-eyebrow">
+                    <span class="categories-eyebrow-line"></span>
+                    Explorez notre univers
+                </span>
+                <h1>Un univers, <em>plusieurs</em> façons de découvrir.</h1>
+                <p>Parcourez nos rayons et trouvez facilement les articles qui correspondent à vos envies.</p>
+            </div>
 
-                            {% if root.children is not empty %}
-                                <h6 class="text-uppercase text-muted fw-semibold small mb-2">Sous-catégories :</h6>
-                                <ul class="list-group list-group-flush">
-                                    {% for child in root.children %}
-                                        {% if child.active %}
-                                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center border-0 py-1">
-                                                <a href="{{ path('public_category_show', {id: child.id}) }}" class="text-decoration-none text-secondary">
-                                                    <i class="bi bi-chevron-right text-primary me-1 small"></i>{{ child.name }}
-                                                </a>
-                                                {% if child.children is not empty %}
-                                                    <span class="badge bg-light text-muted">{{ child.children|length }} ss-cat.</span>
-                                                {% endif %}
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p class="text-muted small mb-0 fst-italic">Catégorie finale directe.</p>
-                            {% endif %}
-                        </div>
-                        <div class="card-footer bg-light border-0 py-2 text-end">
-                            <a href="{{ path('public_category_show', {id: root.id}) }}" class="btn btn-sm btn-link text-decoration-none">
-                                Explorer ce rayon <i class="bi bi-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
+            <div class="categories-hero-mark" aria-hidden="true">
+                <span class="categories-mark-circle"></span>
+                <span class="categories-mark-text">ATELIER<br> BOUTIQUE</span>
+            </div>
+        </header>
+
+        {% if root_categories is empty %}
+            <section class="categories-empty">
+                <div class="categories-empty-icon" aria-hidden="true">✳</div>
+                <h2>Aucun rayon pour le moment</h2>
+                <p>Notre catalogue sera bientôt enrichi. Revenez nous rendre visite !</p>
+                <a href="{{ path('public_home') }}" class="categories-button">Retour à l’accueil <span aria-hidden="true">→</span></a>
+            </section>
+        {% else %}
+            <div class="categories-section-heading">
+                <div>
+                    <span class="categories-section-kicker">Le catalogue</span>
+                    <h2>Nos rayons</h2>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+                <span class="categories-total">
+                    {{ root_categories|length }}
+                    {{ root_categories|length > 1 ? 'rayons' : 'rayon' }}
+                </span>
+            </div>
+
+            <div class="categories-grid">
+                {% for root in root_categories %}
+                    {% set active_children = root.children|filter(child => child.active) %}
+
+                    <article class="category-card" style="--card-index: {{ loop.index0 }};">
+                        <div class="category-card-top">
+                            <span class="category-card-number">{{ '%02d'|format(loop.index) }}</span>
+                            <span class="category-card-count">
+                                {{ active_children|length }}
+                                {{ active_children|length > 1 ? 'sous-rayons' : 'sous-rayon' }}
+                            </span>
+                        </div>
+
+                        <div class="category-card-content">
+                            <h3>
+                                <a href="{{ path('public_category_show', {id: root.id}) }}">
+                                    {{ root.name }}
+                                </a>
+                            </h3>
+
+                            {% if root.description %}
+                                <p class="category-card-description">{{ root.description }}</p>
+                            {% else %}
+                                <p class="category-card-description category-card-description-muted">
+                                    Découvrez notre sélection dans ce rayon.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        {% if active_children is not empty %}
+                            <div class="category-subcategories">
+                                <span class="category-subcategories-label">Explorer les sous-rayons</span>
+                                <div class="category-subcategories-list">
+                                    {% for child in active_children %}
+                                        <a href="{{ path('public_category_show', {id: child.id}) }}" class="subcategory-chip">
+                                            {{ child.name }}
+                                            <span aria-hidden="true">↗</span>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="category-no-subcategories">
+                                <span aria-hidden="true">✦</span>
+                                Rayon à découvrir
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('public_category_show', {id: root.id}) }}" class="category-card-link">
+                            <span>Découvrir le rayon</span>
+                            <span class="category-card-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <footer class="categories-bottom-note">
+            <span class="categories-bottom-star" aria-hidden="true">✳</span>
+            <p>Une belle découverte commence parfois par un simple rayon.</p>
+        </footer>
+    </div>
 </div>
 {% endblock %}

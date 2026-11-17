@@ -1,0 +1,575 @@
+/* ==========================================================================
+   ATELIER BOUTIQUE - FEUILLE DE STYLE IDENTITAIRE
+   Palette personnalisée :
+   - #212E53 : Bleu nuit profond (Texte principal, encre, contrastes forts)
+   - #4A919E : Bleu canard / Océan (Boutons d'action, accents secondaires, focus)
+   - #BED3C3 : Sauge douce (Fonds subtils, filets doux, badges)
+   - #EBACA2 : Pêche poudrée (Accents doux, surfaces d'alerte, touches subtiles)
+   - #CE6A6B : Corail cuit / Terracotta (Accent principal de marque, boutons phares)
+   ========================================================================== */
+
+:root {
+    /* 1. Palette de Couleurs Demandée */
+    --color-paper: #F8FAF9;         /* Fond principal : blanc très doux teinté sauge */
+    --color-surface: #FFFFFF;       /* Surfaces cartes & formulaires */
+    --color-surface-soft: #EDF3EF;  /* Fond très léger dérivé de #BED3C3 */
+    --color-ink: #212E53;           /* Texte & Titres : Bleu nuit profond */
+    --color-ink-muted: #566487;     /* Texte secondaire, labels, fil d'Ariane */
+    --color-line: #D0DFD4;          /* Filets et séparateurs basés sur #BED3C3 */
+    --color-brand: #CE6A6B;         /* Accent principal : Corail cuit */
+    --color-brand-hover: #B85657;
+    --color-brand-soft: #EBACA2;    /* Pêche poudrée */
+    --color-accent-blue: #4A919E;   /* Bleu canard */
+    --color-accent-blue-hover: #3B7782;
+    --color-action: #4A919E;        /* Bouton d'action / WhatsApp : Bleu canard avec texte blanc (AA) */
+    --color-action-hover: #3B7782;
+    --color-danger: #CE6A6B;
+
+    /* 2. Typographie Simple, Moderne et Épurée (Sans-Serif Naturelle) */
+    --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+    --type-display: clamp(2rem, 4.5vw, 3.2rem);
+    --type-h1: clamp(1.6rem, 3vw, 2.3rem);
+    --type-h2: clamp(1.3rem, 2.2vw, 1.7rem);
+    --type-h3: 1.15rem;
+    --type-lead: 1.1rem;
+    --type-body: 1rem;
+    --type-small: 0.875rem;
+    --type-caption: 0.75rem;
+
+    /* 3. Espacements & Rayons */
+    --space-section: clamp(2.5rem, 6vw, 5rem);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+
+    /* 4. Ombres douces et naturelles */
+    --shadow-soft: 0 4px 16px rgba(33, 46, 83, 0.04);
+    --shadow-card: 0 2px 8px rgba(33, 46, 83, 0.06), 0 8px 24px rgba(33, 46, 83, 0.05);
+}
+
+/* Base Document */
+body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--type-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Titres - Simples, clairs, sans excentricité */
+h1, h2, h3, h4, h5, h6,
+.font-heading,
+.navbar-brand {
+    font-family: var(--font-heading);
+    color: var(--color-ink);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+}
+
+/* Liens */
+a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+a:hover {
+    color: var(--color-brand);
+}
+
+/* Focus Clavier Universel */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid var(--color-accent-blue);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation & En-tête
+   -------------------------------------------------------------------------- */
+.site-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-line);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    box-shadow: 0 1px 4px rgba(33, 46, 83, 0.03);
+}
+
+.site-navbar {
+    padding: 0.85rem 0;
+}
+
+.brand-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.brand-dot {
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-brand);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.site-nav-link {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-ink-muted);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease;
+}
+.site-nav-link:hover,
+.site-nav-link.active {
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Composants de Carte Produit
+   -------------------------------------------------------------------------- */
+.product-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+    border-color: var(--color-brand-soft);
+}
+
+.product-thumb-wrap {
+    position: relative;
+    background: var(--color-surface-soft);
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.product-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-thumb {
+    transform: scale(1.02);
+}
+
+.product-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.product-thumb-placeholder-tag {
+    font-size: 1.25rem;
+    color: var(--color-accent-blue);
+    margin-bottom: 0.2rem;
+}
+
+.product-category-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent-blue);
+    margin-bottom: 0.35rem;
+}
+
+.product-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.35rem;
+    line-height: 1.35;
+}
+
+.product-desc {
+    color: var(--color-ink-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.product-price {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--color-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Boutons
+   -------------------------------------------------------------------------- */
+.btn-editorial {
+    background-color: var(--color-ink);
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.25rem;
+    border: 1px solid var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    transition: all 0.15s ease;
+}
+.btn-editorial:hover {
+    background-color: var(--color-brand);
+    border-color: var(--color-brand);
+    color: #FFFFFF;
+}
+
+.btn-editorial-outline {
+    background-color: transparent;
+    color: var(--color-ink);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.25rem;
+    border: 1px solid var(--color-line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    transition: all 0.15s ease;
+}
+.btn-editorial-outline:hover {
+    background-color: var(--color-surface);
+    border-color: var(--color-accent-blue);
+    color: var(--color-accent-blue);
+}
+
+/* Bouton Action / WhatsApp (Bleu canard #4A919E -> contraste propre avec blanc) */
+.btn-whatsapp {
+    background-color: var(--color-action);
+    border: 1px solid var(--color-action);
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 44px;
+    padding: 0.5rem 1.1rem;
+    transition: all 0.15s ease;
+}
+.btn-whatsapp:hover,
+.btn-whatsapp:focus-visible {
+    background-color: var(--color-action-hover);
+    border-color: var(--color-action-hover);
+    color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   Hero d'Accueil
+   -------------------------------------------------------------------------- */
+.hero-block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: var(--space-section);
+    box-shadow: var(--shadow-soft);
+}
+
+.hero-manifesto {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--color-brand);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.hero-title {
+    font-size: var(--type-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    max-width: 22ch;
+}
+
+.hero-text {
+    font-size: var(--type-lead);
+    color: var(--color-ink-muted);
+    max-width: 54ch;
+    margin: 1.25rem 0 1.75rem;
+    line-height: 1.6;
+}
+
+.hero-stats-panel {
+    border-left: 1px solid var(--color-line);
+    padding-left: 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+@media (max-width: 991px) {
+    .hero-stats-panel {
+        border-left: none;
+        border-top: 1px solid var(--color-line);
+        padding-left: 0;
+        padding-top: 1.75rem;
+        margin-top: 1.75rem;
+    }
+}
+
+.stat-item-num {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1;
+}
+.stat-item-text {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Rayons & Arbre Catégories
+   -------------------------------------------------------------------------- */
+.category-node-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-soft);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.category-node-card:hover {
+    border-color: var(--color-brand);
+    transform: translateY(-2px);
+}
+
+.category-badge-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--color-surface-soft);
+    color: var(--color-ink);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-line);
+}
+
+.subcat-pill {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+}
+.subcat-pill:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+    background-color: var(--color-surface-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Fil d'Ariane
+   -------------------------------------------------------------------------- */
+.breadcrumb-atelier {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    padding: 0;
+    list-style: none;
+}
+.breadcrumb-atelier li + li::before {
+    content: "/";
+    color: var(--color-line);
+    margin-right: 0.5rem;
+}
+.breadcrumb-atelier a {
+    color: var(--color-ink-muted);
+}
+.breadcrumb-atelier a:hover {
+    color: var(--color-ink);
+}
+.breadcrumb-atelier .active {
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Fiche Article & Grande Photo
+   -------------------------------------------------------------------------- */
+.product-detail-frame {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.product-detail-hero-photo {
+    width: 100%;
+    min-height: 400px;
+    max-height: 540px;
+    object-fit: cover;
+    background-color: var(--color-surface-soft);
+    display: block;
+}
+
+.product-summary-block {
+    padding: clamp(1.5rem, 4vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.whatsapp-action-card {
+    background-color: var(--color-surface-soft);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Formulaires (Mono-colonne aérée)
+   -------------------------------------------------------------------------- */
+.form-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    padding: clamp(1.75rem, 4vw, 3rem);
+    box-shadow: var(--shadow-card);
+}
+
+.form-control,
+.form-select {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    min-height: 46px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 3px rgba(74, 145, 158, 0.2);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.4rem;
+}
+
+/* --------------------------------------------------------------------------
+   Pagination Sobre
+   -------------------------------------------------------------------------- */
+.pagination-atelier {
+    display: flex;
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+    justify-content: center;
+}
+.pagination-atelier .page-link {
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    border-radius: var(--radius-sm);
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.pagination-atelier .page-item.active .page-link {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #FFFFFF;
+}
+.pagination-atelier .page-item.disabled .page-link {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Pied de page
+   -------------------------------------------------------------------------- */
+.site-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+    padding: 2.75rem 0;
+    margin-top: var(--space-section);
+}
+
+/* --------------------------------------------------------------------------
+   Accessibilité Mouvement Réduit (A11y)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .product-card:hover,
+    .product-card:hover .product-thumb,
+    .category-node-card:hover {
+        transform: none !important;
+    }
+}

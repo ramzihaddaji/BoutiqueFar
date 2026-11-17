@@ -2,9 +2,12 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '16'
+        # Ne regarder que le schéma "public" (ignore auth, storage, realtime… de Supabase)
+        schema_filter: '~^[^.]+$~'
+
+        # Filet de sécurité : type PostgreSQL text[] inconnu de Doctrine
+        mapping_types:
+            _text: string
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true

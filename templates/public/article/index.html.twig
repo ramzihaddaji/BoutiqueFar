@@ -1,102 +1,134 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catalogue des Articles - Boutique{% endblock %}
+{% block title %}Inventaire & recherche — Atelier Boutique{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/article-index.css') }}">
+{% endblock %}
 
 {% block body %}
-<div class="container">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Articles</li>
-        </ol>
-    </nav>
+{% set category_id = selected_category ? selected_category.id : null %}
+<div class="ai-page">
+    <div class="container">
 
-    <!-- Zone de Filtrage et Recherche -->
-    <div class="card shadow-sm border-0 mb-4 rounded-3">
-        <div class="card-body p-4">
-            <form method="get" action="{{ path('public_article_index') }}" class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label for="searchQuery" class="form-label fw-semibold small text-muted">Rechercher par mot-clé</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" id="searchQuery" name="q" value="{{ search_query }}" placeholder="Nom, description...">
-                    </div>
+        <nav class="ai-breadcrumb" aria-label="Fil d’Ariane">
+            <a href="{{ path('public_home') }}">Accueil</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Inventaire</span>
+        </nav>
+
+        <header class="ai-hero">
+            <div class="ai-hero-content">
+                <span class="ai-eyebrow">
+                    <span class="ai-eyebrow-line"></span>
+                    Atelier Boutique <span class="ai-eyebrow-sep">/</span> Inventaire
+                </span>
+                <h1>Toutes nos <em>créations</em> en stock.</h1>
+                <p>Recherchez par mot-clé ou affinez par rayon pour trouver la pièce qui vous correspond.</p>
+                <div class="ai-hero-meta">
+                    <span class="ai-meta-dot"></span>
+                    {{ total_articles }} {{ total_articles > 1 ? 'références en stock' : 'référence en stock' }}
+                </div>
+            </div>
+            <div class="ai-hero-decoration" aria-hidden="true">
+                <span class="ai-decoration-ring"></span>
+                <span class="ai-decoration-symbol">✳</span>
+            </div>
+        </header>
+
+        <section class="ai-filter" aria-label="Recherche et filtres">
+            <form method="get" action="{{ path('public_article_index') }}" class="ai-filter-form" role="search">
+                <div class="ai-field">
+                    <label for="searchQuery">Mot-clé</label>
+                    <input type="search" id="searchQuery" name="q" value="{{ search_query }}" placeholder="Ex. veste, montre, cuir…" autocomplete="off">
                 </div>
 
-                <div class="col-md-5">
-                    <label for="categoryFilter" class="form-label fw-semibold small text-muted">Catégorie finale</label>
-                    <select class="form-select" id="categoryFilter" name="category">
-                        <option value="">-- Toutes les catégories --</option>
+                <div class="ai-field">
+                    <label for="categoryFilter">Rayon</label>
+                    <select id="categoryFilter" name="category">
+                        <option value="">Tous les rayons</option>
                         {% for cat in leaf_categories %}
-                            <option value="{{ cat.id }}" {% if selected_category and selected_category.id == cat.id %}selected{% endif %}>
-                                {{ cat.name }}
-                            </option>
+                            <option value="{{ cat.id }}" {% if category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        Filtrer
-                    </button>
-                    {% if search_query or selected_category %}
-                        <a href="{{ path('public_article_index') }}" class="btn btn-outline-secondary" title="Réinitialiser les filtres">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
-                    {% endif %}
+                <div class="ai-filter-actions">
+                    <button type="submit" class="ai-btn-primary">Filtrer <span aria-hidden="true">→</span></button>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <!-- En-tête des résultats -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 fw-bold text-dark mb-0">Tous les Articles</h1>
-            <p class="text-muted small mb-0">{{ total_articles }} article(s) trouvé(s)</p>
-        </div>
-        {% if selected_category %}
-            <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
-                Filtre : {{ selected_category.name }}
-            </span>
-        {% endif %}
-    </div>
-
-    <!-- Grille des Articles -->
-    {% if articles is empty %}
-        <div class="alert alert-info py-5 text-center border-0 shadow-sm rounded-4">
-            <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
-            <h5 class="fw-bold">Aucun article ne correspond à votre recherche.</h5>
-            <p class="text-muted mb-3">Essayez d'ajuster vos filtres ou de chercher un autre mot-clé.</p>
-            <a href="{{ path('public_article_index') }}" class="btn btn-outline-primary btn-sm">Réinitialiser les filtres</a>
-        </div>
-    {% else %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
-            {% for article in articles %}
-                <div class="col">
-                    {% include 'components/_product_card.html.twig' with {'article': article} %}
+            {% if search_query or selected_category %}
+                <div class="ai-active-filters">
+                    <span class="ai-active-label">Filtres actifs</span>
+                    {% if search_query %}
+                        <a class="ai-chip" href="{{ path('public_article_index', {category: category_id}) }}" aria-label="Retirer le mot-clé {{ search_query }}">
+                            « {{ search_query }} » <span aria-hidden="true">×</span>
+                        </a>
+                    {% endif %}
+                    {% if selected_category %}
+                        <a class="ai-chip" href="{{ path('public_article_index', {q: search_query}) }}" aria-label="Retirer le rayon {{ selected_category.name }}">
+                            {{ selected_category.name }} <span aria-hidden="true">×</span>
+                        </a>
+                    {% endif %}
+                    <a class="ai-reset" href="{{ path('public_article_index') }}">Tout effacer</a>
                 </div>
-            {% endfor %}
-        </div>
+            {% endif %}
+        </section>
 
-        <!-- Pagination -->
-        {% if max_pages > 1 %}
-            <nav aria-label="Pagination catalogue" class="d-flex justify-content-center">
-                <ul class="pagination shadow-sm">
-                    <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
-                        <a class="page-link" href="{{ path('public_article_index', {page: current_page - 1, q: search_query, category: selected_category ? selected_category.id : null}) }}">Précédent</a>
-                    </li>
-                    {% for p in 1..max_pages %}
-                        <li class="page-item {% if p == current_page %}active{% endif %}">
-                            <a class="page-link" href="{{ path('public_article_index', {page: p, q: search_query, category: selected_category ? selected_category.id : null}) }}">{{ p }}</a>
-                        </li>
+        <section class="ai-results" aria-labelledby="aiResultsTitle">
+            <div class="ai-section-heading">
+                <div>
+                    <span class="ai-kicker">La sélection</span>
+                    <h2 id="aiResultsTitle">{{ search_query or selected_category ? 'Résultats' : 'Tous les articles' }}</h2>
+                </div>
+                <span class="ai-count">{{ total_articles }}</span>
+            </div>
+
+            {% if articles is empty %}
+                <div class="ai-empty">
+                    <span class="ai-empty-symbol" aria-hidden="true">✳</span>
+                    <h3>Aucun article ne correspond</h3>
+                    <p>Modifiez vos mots-clés ou réinitialisez le sélecteur de rayon.</p>
+                    <a href="{{ path('public_article_index') }}" class="ai-btn-primary">Réinitialiser la vue</a>
+                </div>
+            {% else %}
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ai-grid">
+                    {% for article in articles %}
+                        <div class="col ai-col" style="--item-index: {{ loop.index0 }};">
+                            {% include 'components/_product_card.html.twig' with {'article': article} %}
+                        </div>
                     {% endfor %}
-                    <li class="page-item {% if current_page >= max_pages %}disabled{% endif %}">
-                        <a class="page-link" href="{{ path('public_article_index', {page: current_page + 1, q: search_query, category: selected_category ? selected_category.id : null}) }}">Suivant</a>
-                    </li>
-                </ul>
-            </nav>
-        {% endif %}
-    {% endif %}
+                </div>
+
+                {% if max_pages > 1 %}
+                    <nav aria-label="Pagination du catalogue" class="ai-pagination-wrap">
+                        <ul class="pagination-atelier ai-pagination">
+                            <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
+                                <a class="page-link" aria-label="Page précédente" href="{{ path('public_article_index', {page: max(current_page - 1, 1), q: search_query, category: category_id}) }}"><span aria-hidden="true">←</span></a>
+                            </li>
+                            {% for p in 1..max_pages %}
+                                <li class="page-item {% if p == current_page %}active{% endif %}">
+                                    <a class="page-link" href="{{ path('public_article_index', {page: p, q: search_query, category: category_id}) }}" {% if p == current_page %}aria-current="page"{% endif %}>{{ p }}</a>
+                                </li>
+                            {% endfor %}
+                            <li class="page-item {% if current_page >= max_pages %}disabled{% endif %}">
+                                <a class="page-link" aria-label="Page suivante" href="{{ path('public_article_index', {page: min(current_page + 1, max_pages), q: search_query, category: category_id}) }}"><span aria-hidden="true">→</span></a>
+                            </li>
+                        </ul>
+                        <span class="ai-page-indicator">Page {{ current_page }} sur {{ max_pages }}</span>
+                    </nav>
+                {% endif %}
+            {% endif %}
+        </section>
+
+        <div class="ai-bottom-link">
+            <a href="{{ path('public_category_index') }}">Explorer par rayons <span aria-hidden="true">→</span></a>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,112 +1,168 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Boutique en Ligne{% endblock %}
+{% block title %}Atelier Boutique — Vitrine des Pièces en Stock{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <!-- Typographie éditoriale -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..700&display=swap" rel="stylesheet">
+
+    <!-- Styles spécifiques à la page d'accueil -->
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
 
 {% block body %}
-<div class="container">
-    <!-- Hero Banner -->
-    <div class="p-5 mb-5 bg-white rounded-4 shadow-sm border border-light">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <span class="badge bg-success-subtle text-success mb-2 px-3 py-2 rounded-pill fw-semibold">
-                    <i class="bi bi-whatsapp me-1"></i> Commande directe et rapide
-                </span>
-                <h1 class="display-5 fw-bold text-dark lh-sm">Trouvez votre bonheur dans notre catalogue</h1>
-                <p class="lead text-muted my-3">
-                    Découvrez nos collections d'articles disponibles et contactez-nous directement sur WhatsApp en un clic pour valider votre commande.
-                </p>
-                <div class="d-flex gap-2 pt-2">
-                    <a href="{{ path('public_article_index') }}" class="btn btn-primary btn-lg px-4 gap-2">
-                        <i class="bi bi-grid-fill me-1"></i> Parcourir le catalogue
-                    </a>
-                    <a href="{{ path('public_category_index') }}" class="btn btn-outline-secondary btn-lg px-4">
-                        Toutes les catégories
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="bi bi-bag-heart text-success" style="font-size: 8rem; opacity: 0.85;"></i>
-            </div>
-        </div>
-    </div>
+    {% if showcase_articles is empty %}
+        <section class="showcase-empty-state" aria-labelledby="emptyShowcaseHeading">
+            <h1 id="emptyShowcaseHeading" class="showcase-empty-title">
+                Aucun article en stock pour le moment
+            </h1>
 
-    <!-- Catégories Principales -->
-    <section class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="h3 fw-bold text-dark mb-0">Catégories Principales</h2>
-                <p class="text-muted small mb-0">Naviguez par rayon et découvrez nos sous-catégories</p>
-            </div>
-            <a href="{{ path('public_category_index') }}" class="btn btn-outline-primary btn-sm">
-                Voir tout <i class="bi bi-arrow-right ms-1"></i>
+            <p class="showcase-empty-desc">
+                Nos pièces sélectionnées sont actuellement indisponibles ou réservées.
+                Vous pouvez parcourir l'ensemble de notre inventaire pour découvrir nos créations.
+            </p>
+
+            <a href="{{ path('public_article_index') }}" class="showcase-cta-primary">
+                Voir tous les articles
             </a>
-        </div>
+        </section>
+    {% else %}
+        <section
+            class="showcase-viewport{% if showcase_articles|length == 1 %} is-single{% endif %}"
+            role="region"
+            aria-roledescription="carrousel"
+            aria-label="Vitrine des articles disponibles"
+        >
+            <div class="showcase-live-region visually-hidden" aria-live="off" aria-atomic="true"></div>
 
-        {% if root_categories is empty %}
-            <div class="alert alert-info border-0 shadow-sm">Aucune catégorie disponible pour le moment.</div>
-        {% else %}
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                {% for category in root_categories %}
-                    <div class="col">
-                        <a href="{{ path('public_category_show', {id: category.id}) }}" class="card h-100 text-decoration-none shadow-sm product-card border-0 bg-white">
-                            <div class="card-body text-center py-4">
-                                <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
-                                    <i class="bi bi-folder2-open fs-4"></i>
+            <div class="showcase-track">
+                {% for article in showcase_articles %}
+                    <article
+                        class="showcase-slide{% if loop.first %} is-active{% endif %}"
+                        role="group"
+                        aria-roledescription="diapositive"
+                        aria-label="{{ loop.index }} sur {{ showcase_articles|length }}"
+                        {% if not loop.first %}aria-hidden="true" inert{% endif %}
+                    >
+                        <!-- Informations de l'article -->
+                        <div class="showcase-panel-text">
+                            <div class="showcase-text-content">
+                                <div class="showcase-category">
+                                    {{ article.category.name }}
                                 </div>
-                                <h6 class="card-title fw-bold text-dark mb-1">{{ category.name }}</h6>
-                                <span class="badge bg-light text-muted border">
-                                    {{ category.children|length }} sous-catégorie(s)
-                                </span>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </section>
 
-    <!-- Articles Populaires -->
-    {% if popular_articles is not empty %}
-        <section class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="h3 fw-bold text-dark mb-0">Les Plus Demandés</h2>
-                    <p class="text-muted small mb-0">Articles les plus sollicités par nos clients</p>
-                </div>
-            </div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4">
-                {% for article in popular_articles %}
-                    <div class="col">
-                        {% include 'components/_product_card.html.twig' with {'article': article} %}
-                    </div>
+                                <h1 class="showcase-title">
+                                    {{ article.name }}
+                                </h1>
+
+                                <div class="showcase-price-row">
+                                    <span
+                                        class="showcase-price"
+                                        aria-label="Prix : {{ article.price|number_format(2, ',', ' ') }} euros"
+                                    >
+                                        {{ article.price|number_format(2, ',', ' ') }} €
+                                    </span>
+
+                                    <span class="showcase-stock-tag">
+                                        En stock à l'atelier
+                                    </span>
+                                </div>
+
+                                <p class="showcase-desc">
+                                    {% if article.description %}
+                                        {{ article.description|length > 140
+                                            ? article.description|slice(0, 140) ~ '…'
+                                            : article.description
+                                        }}
+                                    {% else %}
+                                        Pièce disponible immédiatement dans notre atelier.
+                                        Demandez confirmation et détails auprès de notre équipe.
+                                    {% endif %}
+                                </p>
+
+                                <div class="showcase-actions">
+                                    <a
+                                        href="{{ path('public_demande_create', { id: article.id }) }}"
+                                        class="showcase-cta-primary"
+                                    >
+                                        Demander la disponibilité
+                                    </a>
+
+                                    <a
+                                        href="{{ path('public_article_show', { id: article.id }) }}"
+                                        class="showcase-cta-secondary"
+                                    >
+                                        Voir la fiche
+                                    </a>
+                                </div>
+                            </div>
+
+                            {% if showcase_articles|length > 1 %}
+                                <div class="showcase-controls-bar">
+                                    <div
+                                        class="showcase-dots"
+                                        role="tablist"
+                                        aria-label="Sélectionner un article"
+                                    >
+                                        {% for dot in showcase_articles %}
+                                            <button
+                                                type="button"
+                                                class="showcase-dot"
+                                                role="tab"
+                                                data-index="{{ loop.index0 }}"
+                                                aria-label="Afficher l'article {{ loop.index }} : {{ dot.name }}"
+                                                aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                                                {% if loop.first %}aria-current="true"{% endif %}
+                                            ></button>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Image de l'article -->
+                        <div class="showcase-panel-media">
+                            {% if article.image %}
+                                <img
+                                    src="{{ asset('uploads/articles/' ~ article.image) }}"
+                                    alt="{{ article.name }}"
+                                    class="showcase-img"
+                                    {% if loop.first %}
+                                        fetchpriority="high"
+                                        loading="eager"
+                                    {% else %}
+                                        loading="lazy"
+                                    {% endif %}
+                                >
+                            {% else %}
+                                <div class="showcase-placeholder" aria-hidden="true">
+                                    <span class="showcase-placeholder-letter">
+                                        {{ article.name|slice(0, 1)|upper }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
                 {% endfor %}
             </div>
         </section>
+
+        <aside class="showcase-catalogue-bar">
+            <p class="showcase-catalogue-text">
+                Pas trouvé ?
+                <a href="{{ path('public_article_index') }}" class="showcase-catalogue-link">
+                    Voir tous les articles
+                </a>
+            </p>
+        </aside>
     {% endif %}
+{% endblock %}
 
-    <!-- Nouveaux Articles Disponibles -->
-    <section class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="h3 fw-bold text-dark mb-0">Derniers Articles Ajoutés</h2>
-                <p class="text-muted small mb-0">Produits récemment publiés et prêts pour expédition</p>
-            </div>
-            <a href="{{ path('public_article_index') }}" class="btn btn-outline-primary btn-sm">
-                Tous les articles <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-        </div>
-
-        {% if latest_articles is empty %}
-            <div class="alert alert-info border-0 shadow-sm">Aucun article disponible pour l'instant.</div>
-        {% else %}
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                {% for article in latest_articles %}
-                    <div class="col">
-                        {% include 'components/_product_card.html.twig' with {'article': article} %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </section>
-</div>
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/showcase.js') }}" defer></script>
 {% endblock %}

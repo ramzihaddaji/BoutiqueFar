@@ -62,7 +62,7 @@ class AdminArticleWorkflowTest extends WebTestCase
         $this->assertSelectorExists('.alert-success');
 
         /** @var Article $article */
-        $article = $this->em->getRepository(Article::class)->findOneBy(['name' => 'Air Runner 2026']);
+        $article = $this->em->getRepository(Article::class)->findOneBy(['name' => 'Air Runner 2026'], ['id' => 'DESC']);
         $this->assertNotNull($article);
         $this->assertSame('129.99', $article->getPrice());
         $this->assertTrue($article->isAvailable());
@@ -98,9 +98,13 @@ class AdminArticleWorkflowTest extends WebTestCase
         $this->assertResponseRedirects('/admin/articles');
         $this->client->followRedirect();
 
-        $this->em->refresh($article);
-        $this->assertSame('T-Shirt Modifié', $article->getName());
-        $this->assertSame('29.90', $article->getPrice());
+        $articleId = $article->getId();
+        $this->em->clear();
+
+        /** @var Article $updatedArticle */
+        $updatedArticle = $this->em->getRepository(Article::class)->find($articleId);
+        $this->assertSame('T-Shirt Modifié', $updatedArticle->getName());
+        $this->assertSame('29.90', $updatedArticle->getPrice());
     }
 
     public function testDeleteArticleWithoutCsrfFails(): void

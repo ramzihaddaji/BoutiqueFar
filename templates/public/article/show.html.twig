@@ -1,74 +1,89 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ article.name }} - Fiche Produit{% endblock %}
+{% block title %}{{ article.name }} — Atelier Boutique{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/article-show.css') }}">
+{% endblock %}
 
 {% block body %}
-<div class="container">
-    <!-- Fil d'Ariane -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('public_home') }}">Accueil</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('public_category_index') }}">Catégories</a></li>
-            {% for crumb in breadcrumbs %}
-                <li class="breadcrumb-item"><a href="{{ path('public_category_show', {id: crumb.id}) }}">{{ crumb.name }}</a></li>
-            {% endfor %}
-            <li class="breadcrumb-item active fw-semibold" aria-current="page">{{ article.name }}</li>
-        </ol>
-    </nav>
+<div class="as-page">
+    <div class="container">
 
-    <!-- Fiche Article -->
-    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
-        <div class="row g-0">
-            <!-- Image Produit -->
-            <div class="col-md-6 bg-white d-flex align-items-center justify-content-center p-4 border-end">
+        <nav class="as-breadcrumb" aria-label="Fil d’Ariane">
+            <a href="{{ path('public_home') }}">Accueil</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ path('public_category_index') }}">Rayons</a>
+            {% for crumb in breadcrumbs %}
+                <span aria-hidden="true">/</span>
+                <a href="{{ path('public_category_show', {id: crumb.id}) }}">{{ crumb.name }}</a>
+            {% endfor %}
+            <span aria-hidden="true">/</span>
+            <span class="as-breadcrumb-current" aria-current="page">{{ article.name }}</span>
+        </nav>
+
+        <article class="as-frame">
+            <div class="as-media">
                 {% if article.image %}
-                    <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="img-fluid rounded-3 shadow-sm" style="max-height: 480px; object-fit: contain;">
+                    <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="as-photo" loading="eager" fetchpriority="high">
                 {% else %}
-                    <div class="text-center text-muted py-5 my-5">
-                        <i class="bi bi-image" style="font-size: 6rem; opacity: 0.3;"></i>
-                        <p class="mt-2 text-secondary">Aucune photo pour cet article.</p>
+                    <div class="as-placeholder" role="img" aria-label="Photographie à venir">
+                        <span class="as-placeholder-letter" aria-hidden="true">{{ article.name|slice(0, 1)|upper }}</span>
+                        <span class="as-placeholder-text">Photographie en cours d’atelier</span>
                     </div>
                 {% endif %}
             </div>
 
-            <!-- Détails et Action -->
-            <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <a href="{{ path('public_category_show', {id: article.category.id}) }}" class="badge bg-primary-subtle text-primary text-decoration-none px-3 py-2">
-                            <i class="bi bi-tag-fill me-1"></i> {{ article.category.name }}
+            <div class="as-summary">
+                <div class="as-summary-top">
+                    <div class="as-meta-row">
+                        <a href="{{ path('public_category_show', {id: article.category.id}) }}" class="as-category">
+                            {{ article.category.name }}
                         </a>
-                        <span class="badge bg-success-subtle text-success px-3 py-2">
-                            <i class="bi bi-check-circle-fill me-1"></i> En Stock
-                        </span>
+                        <span class="as-stock-tag">En stock à l’atelier</span>
                     </div>
 
-                    <h1 class="h2 fw-bold text-dark mt-3 mb-3">{{ article.name }}</h1>
+                    <h1 class="as-title">{{ article.name }}</h1>
 
-                    <div class="display-5 fw-bold text-dark mb-4">
-                        {{ article.price }} <span class="fs-4 text-muted">€</span>
+                    <div class="as-price" aria-label="Prix : {{ article.price|number_format(2, ',', ' ') }} euros">
+                        {{ article.price|number_format(2, ',', ' ') }} €
                     </div>
 
-                    <h5 class="fw-semibold text-dark mb-2">Description</h5>
-                    <p class="text-muted lh-base mb-4">
-                        {{ article.description ? article.description|nl2br : 'Aucune description particulière n\'a été fournie pour cet article.' }}
-                    </p>
-                </div>
-
-                <!-- Bloc Commande WhatsApp -->
-                <div class="p-4 bg-light rounded-3 border">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <i class="bi bi-whatsapp text-success fs-1"></i>
-                        <div>
-                            <h6 class="mb-0 fw-bold">Demande de disponibilité directe</h6>
-                            <small class="text-muted">Réponse rapide de notre administrateur sur WhatsApp.</small>
+                    <section class="as-details" aria-labelledby="asDetailsTitle">
+                        <h2 id="asDetailsTitle">Détails &amp; spécifications</h2>
+                        <div class="as-description">
+                            {{ article.description ? article.description|nl2br : 'Pièce artisanale enregistrée sans note complémentaire.' }}
                         </div>
-                    </div>
-                    <a href="{{ path('public_demande_create', {id: article.id}) }}" class="btn btn-whatsapp btn-lg w-100 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                        <i class="bi bi-whatsapp fs-5"></i> Demander la disponibilité de cet article
-                    </a>
+                    </section>
                 </div>
+
+                <aside class="as-action" aria-label="Demande de disponibilité">
+                    <div class="as-action-head">
+                        <span class="as-action-title">Demande directe</span>
+                        <span class="as-action-note">Sans inscription</span>
+                    </div>
+                    <p>
+                        Renseignez votre nom, votre ville et votre téléphone : nous vérifions la pièce avant de vous répondre sur WhatsApp.
+                    </p>
+                    <a href="{{ path('public_demande_create', {id: article.id}) }}" class="as-cta">
+                        Demander la disponibilité <span aria-hidden="true">→</span>
+                    </a>
+                    <ul class="as-assurances">
+                        <li>Pièce en stock</li>
+                        <li>Réponse sur WhatsApp</li>
+                        <li>Aucun paiement en ligne</li>
+                    </ul>
+                </aside>
             </div>
+        </article>
+
+        <div class="as-bottom-links">
+            <a href="{{ path('public_category_show', {id: article.category.id}) }}"><span aria-hidden="true">←</span> Retour au rayon {{ article.category.name }}</a>
+            <a href="{{ path('public_article_index') }}">Voir tout l’inventaire <span aria-hidden="true">→</span></a>
         </div>
     </div>
 </div>
