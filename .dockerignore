@@ -1,0 +1,10 @@
+﻿.git
+.env
+.env.*
+!.env.example
+vendor/
+var/
+node_modules/
+.phpunit.cache/
+.idea/
+.vscode/
