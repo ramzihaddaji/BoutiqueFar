@@ -11,14 +11,13 @@ use App\Exception\ArticleBusinessException;
 use App\Form\Article\ArticleType;
 use App\Repository\ArticleRepository;
 use App\Service\Article\ArticleService;
+use App\Service\Image\ImageStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/admin/articles', name: 'admin_article_')]
 #[IsGranted('ROLE_ADMIN')]
@@ -42,7 +41,7 @@ class ArticleController extends AbstractController
     public function new(
         Request $request,
         ArticleService $articleService,
-        SluggerInterface $slugger
+        ImageStorage $imageStorage
     ): Response {
         $dto = new CreateArticleDTO();
         $form = $this->createForm(ArticleType::class, $dto);
@@ -54,7 +53,7 @@ class ArticleController extends AbstractController
             $imageFile = $dto->imageFile;
 
             if ($imageFile instanceof UploadedFile) {
-                $uploadedFilename = $this->handleImageUpload($imageFile, $slugger);
+                $uploadedFilename = $this->handleImageUpload($imageFile, $imageStorage);
             }
 
             try {
@@ -85,7 +84,7 @@ class ArticleController extends AbstractController
         Request $request,
         Article $article,
         ArticleService $articleService,
-        SluggerInterface $slugger
+        ImageStorage $imageStorage
     ): Response {
         $dto = UpdateArticleDTO::fromEntity($article);
         $form = $this->createForm(ArticleType::class, $dto, [
@@ -99,7 +98,8 @@ class ArticleController extends AbstractController
             $imageFile = $dto->imageFile;
 
             if ($imageFile instanceof UploadedFile) {
-                $uploadedFilename = $this->handleImageUpload($imageFile, $slugger);
+                // En cas d'échec, on conserve l'image existante
+                $uploadedFilename = $this->handleImageUpload($imageFile, $imageStorage) ?? $dto->existingImage;
             }
 
             try {
@@ -137,32 +137,25 @@ class ArticleController extends AbstractController
         return $this->redirectToRoute('admin_article_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    private function handleImageUpload(UploadedFile $file, SluggerInterface $slugger): ?string
+    private function handleImageUpload(UploadedFile $file, ImageStorage $storage): ?string
     {
         // 1. Vérification stricte du type MIME réel
         $mimeType = $file->getMimeType();
         if (!isset(self::ALLOWED_MIME_TYPES[$mimeType])) {
             $this->addFlash('danger', 'Type de fichier non autorisé. Formats acceptés : JPEG, PNG, WEBP.');
+
             return null;
         }
 
-        // 2. Extension forcée basée sur le type MIME réel validé (empêche la double extension trompeuse .php.jpg)
-        $safeExtension = self::ALLOWED_MIME_TYPES[$mimeType];
+        // 2. Extension forcée d'après le type MIME validé + nom aléatoire
+        $newFilename = sprintf('%s.%s', bin2hex(random_bytes(16)), self::ALLOWED_MIME_TYPES[$mimeType]);
 
-        // 3. Assainissement cryptographique du nom de fichier
-        $randomBytes = bin2hex(random_bytes(16));
-        $newFilename = sprintf('%s.%s', $randomBytes, $safeExtension);
-
-        $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/articles';
-        if (!is_dir($destination)) {
-            mkdir($destination, 0755, true);
-        }
-
+        // 3. Stockage : Supabase Storage en production, public/uploads en local
         try {
-            $file->move($destination, $newFilename);
-            return $newFilename;
-        } catch (FileException $e) {
+            return $storage->store($file, $newFilename);
+        } catch (\Throwable) {
             $this->addFlash('warning', 'Échec du téléversement de l\'image.');
+
             return null;
         }
     }

@@ -1,4 +1,4 @@
-﻿.git
+.git
 .env.local
 .env.*.local
 .env.dev
@@ -7,6 +7,9 @@ vendor/
 var/
 node_modules/
 .phpunit.cache/
+tests/
+phpunit.xml*
+phpunit.dist.xml
 .idea/
 .vscode/
 public/uploads/*

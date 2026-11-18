@@ -39,7 +39,7 @@
                             <tr>
                                 <td>
                                     {% if art.image %}
-                                        <img src="{{ asset('uploads/articles/' ~ art.image) }}" alt="{{ art.name }}" class="rounded-2" style="width: 48px; height: 48px; object-fit: cover;">
+                                        <img src="{{ article_image_url(art.image) }}" alt="{{ art.name }}" class="rounded-2" style="width: 48px; height: 48px; object-fit: cover;">
                                     {% else %}
                                         <div class="bg-light rounded-2 d-flex align-items-center justify-content-center text-muted border" style="width: 48px; height: 48px;">
                                             <i class="bi bi-image"></i>

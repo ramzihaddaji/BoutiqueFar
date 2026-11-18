@@ -57,7 +57,7 @@ class ArticleType extends AbstractType
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
-                'choice_label' => 'name',
+                'choice_label' => 'fullPath',
                 'label' => 'Catégorie finale',
                 'placeholder' => '-- Sélectionner une catégorie finale --',
                 'query_builder' => function (CategoryRepository $repository): QueryBuilder {

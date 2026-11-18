@@ -50,7 +50,7 @@
                 <div class="mb-3">
                     {% if article.image %}
                         <div class="mb-2 d-flex align-items-center gap-3 p-2 bg-light rounded border">
-                            <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+                            <img src="{{ article_image_url(article.image) }}" alt="{{ article.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
                             <div class="small">
                                 <span class="fw-semibold">Image actuelle :</span> {{ article.image }}
                                 <div class="text-muted">Téléversez un nouveau fichier ci-dessous pour la remplacer.</div>

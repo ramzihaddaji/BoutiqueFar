@@ -1,7 +1,7 @@
 <article class="product-card">
     <a href="{{ path('public_article_show', {id: article.id}) }}" class="product-thumb-wrap text-decoration-none">
         {% if article.image %}
-            <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="product-thumb" loading="lazy">
+            <img src="{{ article_image_url(article.image) }}" alt="{{ article.name }}" class="product-thumb" loading="lazy">
         {% else %}
             <div class="product-thumb-placeholder">
                 <span class="product-thumb-placeholder-tag">#{{ article.id }}</span>

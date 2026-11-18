@@ -82,6 +82,25 @@ class Category
     }
 
     /**
+     * Chemin complet depuis la racine : « Femme › Robes › Robes de soirée ».
+     */
+    public function getFullPath(string $separator = ' › '): string
+    {
+        $names = [];
+        $visited = [];
+        for ($c = $this; $c !== null; $c = $c->getParent()) {
+            $id = spl_object_id($c);
+            if (isset($visited[$id])) {
+                break;
+            }
+            $visited[$id] = true;
+            $names[] = $c->getName();
+        }
+
+        return implode($separator, array_reverse($names));
+    }
+
+    /**
      * Vérifie que la catégorie n'est pas son propre parent (protection cyclique directe).
      *
      * @throws \LogicException

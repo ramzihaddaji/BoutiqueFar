@@ -128,7 +128,7 @@
                         <div class="showcase-panel-media">
                             {% if article.image %}
                                 <img
-                                    src="{{ asset('uploads/articles/' ~ article.image) }}"
+                                    src="{{ article_image_url(article.image) }}"
                                     alt="{{ article.name }}"
                                     class="showcase-img"
                                     {% if loop.first %}

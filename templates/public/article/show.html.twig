@@ -29,7 +29,7 @@
         <article class="as-frame">
             <div class="as-media">
                 {% if article.image %}
-                    <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="as-photo" loading="eager" fetchpriority="high">
+                    <img src="{{ article_image_url(article.image) }}" alt="{{ article.name }}" class="as-photo" loading="eager" fetchpriority="high">
                 {% else %}
                     <div class="as-placeholder" role="img" aria-label="Photographie à venir">
                         <span class="as-placeholder-letter" aria-hidden="true">{{ article.name|slice(0, 1)|upper }}</span>

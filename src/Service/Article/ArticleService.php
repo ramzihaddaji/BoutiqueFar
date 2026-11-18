@@ -10,6 +10,7 @@ use App\Entity\Article;
 use App\Entity\Category;
 use App\Exception\ArticleBusinessException;
 use App\Repository\ArticleRepository;
+use App\Service\Image\ImageStorage;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ArticleService
@@ -17,6 +18,8 @@ class ArticleService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ArticleRepository $articleRepository,
+        // Optionnel : les tests unitaires existants peuvent continuer à construire le service sans lui.
+        private readonly ?ImageStorage $imageStorage = null,
     ) {
     }
 
@@ -57,6 +60,8 @@ class ArticleService
         $this->validateCategory($dto->category);
         $this->validatePrice($dto->price);
 
+        $oldImage = $article->getImage();
+
         $article->setName($dto->name);
         $article->setDescription($dto->description);
         $article->setPrice($dto->price);
@@ -68,6 +73,11 @@ class ArticleService
         }
 
         $this->entityManager->flush();
+
+        // Nouvelle image enregistrée : on retire l'ancienne du stockage
+        if ($uploadedFilename !== null && $oldImage !== null && $oldImage !== $uploadedFilename) {
+            $this->deleteImageSilently($oldImage);
+        }
 
         return $article;
     }
@@ -83,8 +93,12 @@ class ArticleService
             throw ArticleBusinessException::cannotDeleteArticleWithDemandes($article->getName());
         }
 
+        $image = $article->getImage();
+
         $this->entityManager->remove($article);
         $this->entityManager->flush();
+
+        $this->deleteImageSilently($image);
     }
 
     /**
@@ -121,5 +135,18 @@ class ArticleService
             throw ArticleBusinessException::invalidPrice((string) $price);
         }
     }
-}
 
+    /** Un échec de suppression du fichier ne doit jamais bloquer l'opération métier. */
+    private function deleteImageSilently(?string $filename): void
+    {
+        if ($this->imageStorage === null || $filename === null || $filename === '') {
+            return;
+        }
+
+        try {
+            $this->imageStorage->delete($filename);
+        } catch (\Throwable) {
+            // fichier orphelin possible : sans gravité
+        }
+    }
+}

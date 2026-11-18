@@ -1,4 +1,4 @@
-﻿FROM php:8.3-apache
+FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -15,7 +15,7 @@ WORKDIR /var/www/html
 
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
-ENV APP_SECRET=build-only-secret
+ARG APP_SECRET=build-only-secret
 
 COPY . .
 

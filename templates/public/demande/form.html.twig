@@ -16,7 +16,7 @@
                 <!-- En-tête Contextuel -->
                 <div class="d-flex align-items-center gap-3 pb-3 mb-4 border-bottom" style="border-color: var(--color-line) !important;">
                     {% if article.image %}
-                        <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="border" style="width: 58px; height: 58px; object-fit: cover; border-radius: var(--radius-sm);">
+                        <img src="{{ article_image_url(article.image) }}" alt="{{ article.name }}" class="border" style="width: 58px; height: 58px; object-fit: cover; border-radius: var(--radius-sm);">
                     {% else %}
                         <div class="border d-flex align-items-center justify-content-center font-heading fw-bold text-muted bg-light" style="width: 58px; height: 58px; border-radius: var(--radius-sm); font-size: 0.8rem;">
                             #{{ article.id }}

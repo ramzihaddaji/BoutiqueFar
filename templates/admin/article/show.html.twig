@@ -59,7 +59,7 @@
         <div class="card admin-card bg-white p-4 shadow-sm mb-4 text-center">
             <h6 class="text-muted text-uppercase small mb-3">Visuel Produit</h6>
             {% if article.image %}
-                <img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="{{ article.name }}" class="img-fluid rounded border shadow-sm mx-auto d-block" style="max-height: 220px; object-fit: contain;">
+                <img src="{{ article_image_url(article.image) }}" alt="{{ article.name }}" class="img-fluid rounded border shadow-sm mx-auto d-block" style="max-height: 220px; object-fit: contain;">
             {% else %}
                 <div class="p-4 bg-light rounded text-muted">
                     <i class="bi bi-image fs-1 opacity-50"></i>
